@@ -53,9 +53,25 @@ h1 { margin: 0; font-size: clamp(36px, 5vw, 64px); line-height: 1.05; letter-spa
 .stats strong { display: block; font-size: 28px; }
 .stats span { color: #cbd5e1; }
 main { padding: 28px 32px 42px; }
+.notice {
+  max-width: 1220px;
+  margin: -42px auto 28px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--brand);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+  color: #334155;
+  line-height: 1.6;
+}
+.notice strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
 .summary {
   max-width: 1220px;
-  margin: -62px auto 28px;
+  margin: 0 auto 28px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
