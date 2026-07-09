@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>全九州 Google Maps 熱門景點與餐廳資料庫</title>
-  <meta name="description" content="全九州熱門景點與餐廳資料庫，含 Google Maps 評分、評論數、花費、推薦程度、照片與地圖連結。">
+  <meta name="description" content="已用座標清理的九州與下關熱門景點、餐廳、海鮮、咖啡資料庫。每筆保留 Google Maps 連結、評分、評論數、預估花費與照片。">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -14,11 +14,11 @@
       <a href="#places">探索清單</a>
     </nav>
     <section class="hero-inner">
-      <p class="eyebrow">Google Maps 4.0+ / 500+ reviews</p>
+      <p class="eyebrow">Google Maps 4.0+ / 500+ reviews / coordinate checked</p>
       <h1>全九州熱門景點與餐廳資料庫</h1>
-      <p class="lead">為未來每一趟九州旅行準備的可篩選資料庫。收錄 589 個點，涵蓋九州七縣與山口/下關延伸區。</p>
+      <p class="lead">為未來每一趟九州旅行準備的可篩選資料庫。這版已移除座標不在九州七縣或山口/下關範圍內的錯誤地點。</p>
       <div class="stats">
-        <div><strong>589</strong><span>個地點</span></div>
+        <div><strong>508</strong><span>個地點</span></div>
         <div><strong>8</strong><span>個區域</span></div>
         <div><strong>6</strong><span>種分類</span></div>
       </div>
@@ -26,14 +26,19 @@
   </header>
 
   <main>
+    <section class="notice">
+      <strong>資料品質修正版</strong>
+      <span>已用 Google Maps 連結中的經緯度檢查地點位置，排除台灣與其他非九州地點。評分、評論數、價格與照片仍可能隨 Google Maps 更新而變動，出發前請再點入 Google Maps 確認。</span>
+    </section>
+
     <section class="summary">
       <div>
         <h2>地區分布</h2>
-        <div class="chips"><button class="chip" type="button" data-filter="region" data-value="福岡縣">福岡縣<b>173</b></button><button class="chip" type="button" data-filter="region" data-value="佐賀縣">佐賀縣<b>66</b></button><button class="chip" type="button" data-filter="region" data-value="長崎縣">長崎縣<b>74</b></button><button class="chip" type="button" data-filter="region" data-value="熊本縣">熊本縣<b>62</b></button><button class="chip" type="button" data-filter="region" data-value="大分縣">大分縣<b>63</b></button><button class="chip" type="button" data-filter="region" data-value="宮崎縣">宮崎縣<b>57</b></button><button class="chip" type="button" data-filter="region" data-value="鹿兒島縣">鹿兒島縣<b>60</b></button><button class="chip" type="button" data-filter="region" data-value="山口/下關">山口/下關<b>34</b></button></div>
+        <div class="chips"><button class="chip" type="button" data-filter="region" data-value="福岡縣">福岡縣<b>151</b></button><button class="chip" type="button" data-filter="region" data-value="佐賀縣">佐賀縣<b>57</b></button><button class="chip" type="button" data-filter="region" data-value="長崎縣">長崎縣<b>64</b></button><button class="chip" type="button" data-filter="region" data-value="熊本縣">熊本縣<b>59</b></button><button class="chip" type="button" data-filter="region" data-value="大分縣">大分縣<b>54</b></button><button class="chip" type="button" data-filter="region" data-value="宮崎縣">宮崎縣<b>42</b></button><button class="chip" type="button" data-filter="region" data-value="鹿兒島縣">鹿兒島縣<b>56</b></button><button class="chip" type="button" data-filter="region" data-value="山口/下關">山口/下關<b>25</b></button></div>
       </div>
       <div>
         <h2>類型分布</h2>
-        <div class="chips"><button class="chip" type="button" data-filter="kind" data-value="景點">景點<b>260</b></button><button class="chip" type="button" data-filter="kind" data-value="拉麵/麵食">拉麵/麵食<b>58</b></button><button class="chip" type="button" data-filter="kind" data-value="餐廳/美食">餐廳/美食<b>141</b></button><button class="chip" type="button" data-filter="kind" data-value="海鮮/壽司">海鮮/壽司<b>72</b></button><button class="chip" type="button" data-filter="kind" data-value="咖啡/甜點">咖啡/甜點<b>39</b></button><button class="chip" type="button" data-filter="kind" data-value="居酒屋/酒場">居酒屋/酒場<b>19</b></button></div>
+        <div class="chips"><button class="chip" type="button" data-filter="kind" data-value="景點">景點<b>244</b></button><button class="chip" type="button" data-filter="kind" data-value="餐廳/美食">餐廳/美食<b>105</b></button><button class="chip" type="button" data-filter="kind" data-value="海鮮/壽司">海鮮/壽司<b>62</b></button><button class="chip" type="button" data-filter="kind" data-value="拉麵/麵食">拉麵/麵食<b>42</b></button><button class="chip" type="button" data-filter="kind" data-value="居酒屋/酒場">居酒屋/酒場<b>19</b></button><button class="chip" type="button" data-filter="kind" data-value="咖啡/甜點">咖啡/甜點<b>36</b></button></div>
       </div>
     </section>
 
@@ -41,7 +46,7 @@
       <div class="toolbar">
         <label class="search">
           <span>搜尋</span>
-          <input id="searchInput" type="search" placeholder="輸入地名、餐廳、海鮮、阿蘇、咖啡...">
+          <input id="searchInput" type="search" placeholder="輸入地名、餐廳、海鮮、溫泉、咖啡...">
         </label>
         <label>
           <span>地區</span>
@@ -72,7 +77,7 @@
   </main>
 
   <footer>
-    <p>資料擷取自 Google Maps 搜尋結果頁：評分、評論數、價格與營業資訊會變動，出發前請點地圖連結確認。照片為 Google Maps 搜尋卡片縮圖或地點照片搜尋縮圖。</p>
+    <p>資料來源：Google Maps 搜尋結果與地點連結座標。這是一份旅行準備資料庫，不是官方排名；營業時間、價格與評價請以 Google Maps 現況為準。</p>
   </footer>
   <script src="assets/app.js"></script>
 </body>
