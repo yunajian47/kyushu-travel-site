@@ -35,7 +35,15 @@ function recClass(rec) {
 }
 
 function yenText(cost) {
-  return cost || "花費請點 Maps 確認";
+  return cost || "請點 Google Maps 確認";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
 }
 
 function card(place) {
@@ -52,7 +60,7 @@ function card(place) {
     <div class="card-body">
       <h3>${escapeHtml(place.name)}</h3>
       <p class="meta">${escapeHtml(place.kind)} · ${escapeHtml(place.category || place.query || "")}</p>
-      <p class="meta">評分 ${place.rating.toFixed(1)} · 評論 ${place.reviews.toLocaleString()} · ${escapeHtml(yenText(place.cost))}</p>
+      <p class="meta">評分 ${Number(place.rating).toFixed(1)} · 評論 ${Number(place.reviews).toLocaleString()} · ${escapeHtml(yenText(place.cost))}</p>
       <p class="reason">${escapeHtml(place.reason)}</p>
       <div class="actions">
         <a href="${escapeAttr(place.link)}" target="_blank" rel="noopener">Google Maps</a>
@@ -60,14 +68,6 @@ function card(place) {
       </div>
     </div>`;
   return article;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-}
-
-function escapeAttr(value) {
-  return escapeHtml(value);
 }
 
 function applyFilters(resetVisible = true) {
@@ -134,5 +134,5 @@ async function init() {
 }
 
 init().catch((error) => {
-  document.body.insertAdjacentHTML("afterbegin", `<div style="padding:16px;background:#fee2e2;color:#991b1b">網站資料載入失敗：${escapeHtml(error.message)}</div>`);
+  document.body.insertAdjacentHTML("afterbegin", `<div style="padding:16px;background:#fee2e2;color:#991b1b">資料載入失敗：${escapeHtml(error.message)}</div>`);
 });
