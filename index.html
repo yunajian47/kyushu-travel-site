@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>全九州 Google Maps 熱門景點與餐廳資料庫</title>
+  <meta name="description" content="全九州熱門景點與餐廳資料庫，含 Google Maps 評分、評論數、花費、推薦程度、照片與地圖連結。">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <div class="brand">Kyushu Picks</div>
+      <a href="#places">探索清單</a>
+    </nav>
+    <section class="hero-inner">
+      <p class="eyebrow">Google Maps 4.0+ / 500+ reviews</p>
+      <h1>全九州熱門景點與餐廳資料庫</h1>
+      <p class="lead">為未來每一趟九州旅行準備的可篩選資料庫。收錄 589 個點，涵蓋九州七縣與山口/下關延伸區。</p>
+      <div class="stats">
+        <div><strong>589</strong><span>個地點</span></div>
+        <div><strong>8</strong><span>個區域</span></div>
+        <div><strong>6</strong><span>種分類</span></div>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section class="summary">
+      <div>
+        <h2>地區分布</h2>
+        <div class="chips"><button class="chip" type="button" data-filter="region" data-value="福岡縣">福岡縣<b>173</b></button><button class="chip" type="button" data-filter="region" data-value="佐賀縣">佐賀縣<b>66</b></button><button class="chip" type="button" data-filter="region" data-value="長崎縣">長崎縣<b>74</b></button><button class="chip" type="button" data-filter="region" data-value="熊本縣">熊本縣<b>62</b></button><button class="chip" type="button" data-filter="region" data-value="大分縣">大分縣<b>63</b></button><button class="chip" type="button" data-filter="region" data-value="宮崎縣">宮崎縣<b>57</b></button><button class="chip" type="button" data-filter="region" data-value="鹿兒島縣">鹿兒島縣<b>60</b></button><button class="chip" type="button" data-filter="region" data-value="山口/下關">山口/下關<b>34</b></button></div>
+      </div>
+      <div>
+        <h2>類型分布</h2>
+        <div class="chips"><button class="chip" type="button" data-filter="kind" data-value="景點">景點<b>260</b></button><button class="chip" type="button" data-filter="kind" data-value="拉麵/麵食">拉麵/麵食<b>58</b></button><button class="chip" type="button" data-filter="kind" data-value="餐廳/美食">餐廳/美食<b>141</b></button><button class="chip" type="button" data-filter="kind" data-value="海鮮/壽司">海鮮/壽司<b>72</b></button><button class="chip" type="button" data-filter="kind" data-value="咖啡/甜點">咖啡/甜點<b>39</b></button><button class="chip" type="button" data-filter="kind" data-value="居酒屋/酒場">居酒屋/酒場<b>19</b></button></div>
+      </div>
+    </section>
+
+    <section id="places" class="panel">
+      <div class="toolbar">
+        <label class="search">
+          <span>搜尋</span>
+          <input id="searchInput" type="search" placeholder="輸入地名、餐廳、海鮮、阿蘇、咖啡...">
+        </label>
+        <label>
+          <span>地區</span>
+          <select id="regionFilter"><option value="">全部地區</option></select>
+        </label>
+        <label>
+          <span>類型</span>
+          <select id="kindFilter"><option value="">全部類型</option></select>
+        </label>
+        <label>
+          <span>推薦</span>
+          <select id="recFilter"><option value="">全部推薦</option></select>
+        </label>
+        <label>
+          <span>排序</span>
+          <select id="sortSelect">
+            <option value="score">推薦優先</option>
+            <option value="reviews">評論數高到低</option>
+            <option value="rating">評分高到低</option>
+            <option value="region">地區排序</option>
+          </select>
+        </label>
+      </div>
+      <div class="result-line"><strong id="resultCount">0</strong> 個符合條件</div>
+      <div id="cardGrid" class="grid"></div>
+      <button id="loadMore" class="load-more" type="button">載入更多</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>資料擷取自 Google Maps 搜尋結果頁：評分、評論數、價格與營業資訊會變動，出發前請點地圖連結確認。照片為 Google Maps 搜尋卡片縮圖或地點照片搜尋縮圖。</p>
+  </footer>
+  <script src="assets/app.js"></script>
+</body>
+</html>
