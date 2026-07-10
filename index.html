@@ -6,7 +6,7 @@
   <title>全九州大型旅行資料庫</title>
   <meta name="description" content="全九州與下關大型旅行資料庫，含互動地圖、Google Maps 連結、評分、評論數、座標清理、分類、花費與地點預覽。">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQj5yL0KDrjAeGqQH7fC6Ky9J+2x4kA=" crossorigin="">
-  <link rel="stylesheet" href="assets/styles.css?v=leaflet-fix-20260710">
+  <link rel="stylesheet" href="assets/styles.css?v=rating-review-20260710">
 </head>
 <body>
   <header class="hero">
@@ -32,7 +32,7 @@
   <main>
     <section class="notice">
       <strong>大型資料庫修正版</strong>
-      <span>高信心 = 評分 4.0+ 且評論 500+；中信心 = 評分 4.0+ 且評論 100+；候選 = 評分 3.8+ 且評論 50+。所有地點都經 Google Maps 座標範圍檢查，但營業時間、價格、評價仍需出發前點入確認。</span>
+      <span>所有地點都經 Google Maps 座標範圍檢查，並保留評分、評論數、花費估算、地圖位置與預覽介紹。營業時間、價格、評價仍會變動，出發前請點入 Google Maps 再確認。</span>
     </section>
 
     <section class="summary" aria-label="資料摘要">
@@ -44,10 +44,6 @@
         <h2>類型分布</h2>
         <div id="kindChips" class="chips"></div>
       </div>
-      <div>
-        <h2>信心等級</h2>
-        <div id="confidenceChips" class="chips"></div>
-      </div>
     </section>
 
     <section id="places" class="panel">
@@ -58,8 +54,8 @@
         </label>
         <label><span>地區</span><select id="regionFilter"><option value="">全部地區</option></select></label>
         <label><span>類型</span><select id="kindFilter"><option value="">全部類型</option></select></label>
-        <label><span>推薦</span><select id="recFilter"><option value="">全部推薦</option></select></label>
-        <label><span>信心</span><select id="confidenceFilter"><option value="">全部信心</option></select></label>
+        <label><span>最低評分</span><select id="ratingFilter"><option value="">不限評分</option></select></label>
+        <label><span>最低評論</span><select id="reviewFilter"><option value="">不限評論數</option></select></label>
         <label>
           <span>排序</span>
           <select id="sortSelect">
@@ -116,6 +112,6 @@
     <p>資料來源：Google Maps 搜尋結果與地點連結座標。這是旅行準備資料庫，不是官方排名；請以 Google Maps 現況為準。</p>
   </footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="assets/app.js?v=leaflet-fix-20260710"></script>
+  <script src="assets/app.js?v=rating-review-20260710"></script>
 </body>
 </html>
