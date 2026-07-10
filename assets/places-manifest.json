@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-10T11:33:09.744903+00:00",
+  "dataset": "all-japan-travel-database",
+  "sourcePolicy": "production data must come from real Google Maps or Google Places inputs",
+  "singleFile": "places.json",
+  "totalPlaces": 1261,
+  "minimumTarget": 15000,
+  "status": "needs_more_true_google_maps_data",
+  "completionChecks": {
+    "minimum_15000_places": false,
+    "all_47_prefectures_covered": false,
+    "all_prefecture_quotas_met": false,
+    "no_missing_coordinates": true,
+    "all_coordinates_inside_prefecture_bounds": true,
+    "unique_google_maps_links": true,
+    "no_synthetic_production_sources": true
+  },
+  "shardSize": 1000,
+  "shards": [
+    {
+      "url": "data/places-shards/places-0001.json",
+      "count": 1000,
+      "startIndex": 1,
+      "endIndex": 1000
+    },
+    {
+      "url": "data/places-shards/places-0002.json",
+      "count": 261,
+      "startIndex": 1001,
+      "endIndex": 1261
+    }
+  ]
+}
