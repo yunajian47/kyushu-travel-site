@@ -313,7 +313,7 @@ function wireEvents() {
 }
 
 async function init() {
-  const res = await fetch("assets/places.json");
+  const res = await fetch("assets/places.json?v=map-clean-20260710");
   state.places = await res.json();
 
   renderSummary();
