@@ -4,9 +4,12 @@ const state = {
   visible: 36,
   map: null,
   markerLayer: null,
+  markerRenderer: null,
   markers: new Map(),
   activePreview: null,
 };
+
+window.kyushuMapState = state;
 
 const regionOrder = ["福岡縣", "佐賀縣", "長崎縣", "熊本縣", "大分縣", "宮崎縣", "鹿兒島縣", "山口/下關"];
 const $ = (id) => document.getElementById(id);
@@ -119,13 +122,14 @@ function setupMap() {
     return;
   }
   const mapEl = $("map");
-  state.map = L.map(mapEl, { scrollWheelZoom: false }).setView([32.7, 130.7], 7);
+  state.map = L.map(mapEl, { preferCanvas: true, scrollWheelZoom: false }).setView([32.7, 130.7], 7);
   mapEl.addEventListener("mouseenter", () => state.map.scrollWheelZoom.enable());
   mapEl.addEventListener("mouseleave", () => state.map.scrollWheelZoom.disable());
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(state.map);
+  state.markerRenderer = L.canvas({ padding: 0.4 });
   state.markerLayer = L.layerGroup().addTo(state.map);
 }
 
@@ -142,17 +146,25 @@ function markerPopup(place) {
     </div>`;
 }
 
-function markerIcon(place) {
+function markerColor(place) {
   const reviews = Number(place.reviews || 0);
   const rating = Number(place.rating || 0);
-  const markerClass = rating >= 4.4 && reviews >= 3000 ? "marker-high" : reviews >= 500 ? "marker-mid" : "marker-candidate";
-  return L.divIcon({
-    className: `custom-marker ${markerClass}`,
-    html: `<span>${escapeHtml((place.kind || "").slice(0, 1))}</span>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-    popupAnchor: [0, -14],
-  });
+  if (rating >= 4.4 && reviews >= 3000) return "#1456d9";
+  if (reviews >= 500) return "#0f766e";
+  return "#a16207";
+}
+
+function markerTooltip(place) {
+  return `
+    <article class="hover-card">
+      <img src="${escapeAttr(place.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">
+      <div>
+        <strong>${escapeHtml(place.name)}</strong>
+        <span>${escapeHtml(place.region)} · ${escapeHtml(place.kind)}</span>
+        <span>評分 ${Number(place.rating).toFixed(1)} · 評論 ${Number(place.reviews).toLocaleString()}</span>
+        <span>${escapeHtml(place.cost || "請點 Google Maps 確認")}</span>
+      </div>
+    </article>`;
 }
 
 function renderMap() {
@@ -164,7 +176,32 @@ function renderMap() {
   $("mapCount").textContent = points.length.toLocaleString();
 
   for (const place of points) {
-    const marker = L.marker([Number(place.lat), Number(place.lng)], { icon: markerIcon(place) }).bindPopup(markerPopup(place));
+    const color = markerColor(place);
+    const marker = L.circleMarker([Number(place.lat), Number(place.lng)], {
+      renderer: state.markerRenderer,
+      radius: Number(place.reviews || 0) >= 3000 ? 7 : 6,
+      color: "#ffffff",
+      weight: 2,
+      fillColor: color,
+      fillOpacity: 0.9,
+      bubblingMouseEvents: false,
+    })
+      .bindTooltip(markerTooltip(place), {
+        className: "map-hover-card",
+        direction: "top",
+        offset: [0, -10],
+        opacity: 1,
+        sticky: true,
+      })
+      .bindPopup(markerPopup(place))
+      .on("mouseover", function () {
+        this.setStyle({ radius: 9, weight: 3, fillOpacity: 1 });
+        this.openTooltip();
+      })
+      .on("mouseout", function () {
+        this.setStyle({ radius: Number(place.reviews || 0) >= 3000 ? 7 : 6, weight: 2, fillOpacity: 0.9 });
+        this.closeTooltip();
+      });
     marker.addTo(state.markerLayer);
     state.markers.set(Number(place.index), marker);
   }
@@ -186,6 +223,7 @@ function focusMap(placeIndex) {
   if (!marker || !place || !state.map) return;
   document.querySelector("#mapSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
   state.map.setView([Number(place.lat), Number(place.lng)], 13);
+  marker.openTooltip();
   marker.openPopup();
 }
 
@@ -313,7 +351,7 @@ function wireEvents() {
 }
 
 async function init() {
-  const res = await fetch("assets/places.json?v=map-clean-20260710b");
+  const res = await fetch("assets/places.json?v=hover-map-20260710b");
   state.places = await res.json();
 
   renderSummary();
