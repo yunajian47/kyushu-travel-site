@@ -178,6 +178,17 @@ function markerPopup(place) {
     </div>`;
 }
 
+function markerIcon(place) {
+  const confidenceClass = place.confidence === "高" ? "marker-high" : place.confidence === "中" ? "marker-mid" : "marker-candidate";
+  return L.divIcon({
+    className: `custom-marker ${confidenceClass}`,
+    html: `<span>${escapeHtml((place.kind || "").slice(0, 1))}</span>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
+  });
+}
+
 function renderMap() {
   if (!state.map || !state.markerLayer) return;
   state.markerLayer.clearLayers();
@@ -187,7 +198,7 @@ function renderMap() {
   $("mapCount").textContent = points.length.toLocaleString();
 
   for (const place of points) {
-    const marker = L.marker([Number(place.lat), Number(place.lng)]).bindPopup(markerPopup(place));
+    const marker = L.marker([Number(place.lat), Number(place.lng)], { icon: markerIcon(place) }).bindPopup(markerPopup(place));
     marker.addTo(state.markerLayer);
     state.markers.set(Number(place.index), marker);
   }
