@@ -60,15 +60,16 @@ function chipButton(label, count, filter) {
 }
 
 function renderSummary() {
-  $("totalStat").textContent = state.places.length.toLocaleString();
-  $("regionStat").textContent = unique(state.places.map((p) => p.region)).length;
-  $("kindStat").textContent = unique(state.places.map((p) => p.kind)).length;
+  if ($("totalStat")) $("totalStat").textContent = state.places.length.toLocaleString();
+  if ($("regionStat")) $("regionStat").textContent = unique(state.places.map((p) => p.region)).length;
+  if ($("kindStat")) $("kindStat").textContent = unique(state.places.map((p) => p.kind)).length;
 
   const regionCounts = countBy(state.places, "region");
   const kindCounts = countBy(state.places, "kind");
 
   const regionBox = $("regionChips");
   const kindBox = $("kindChips");
+  if (!regionBox || !kindBox) return;
   regionBox.innerHTML = "";
   kindBox.innerHTML = "";
 
@@ -351,7 +352,7 @@ function wireEvents() {
 }
 
 async function init() {
-  const res = await fetch("assets/places.json?v=hover-map-20260710b");
+  const res = await fetch("assets/places.json?v=clean-ui-20260710");
   state.places = await res.json();
 
   renderSummary();
