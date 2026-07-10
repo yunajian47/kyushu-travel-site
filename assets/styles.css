@@ -22,66 +22,25 @@ body.modal-open { overflow: hidden; }
 a { color: inherit; }
 
 .hero {
-  min-height: 430px;
-  background:
-    linear-gradient(90deg, rgba(8, 18, 35, .96), rgba(8, 18, 35, .68)),
-    url("https://tse4.mm.bing.net/th?q=Kyushu%20Japan%20travel%20landscape&w=1600&h=900&c=7&rs=1&p=0") center/cover;
-  color: white;
-}
-
-.nav {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 36px;
-  border-bottom: 1px solid rgba(255,255,255,.12);
-}
-
-.brand { font-size: 19px; font-weight: 800; letter-spacing: .04em; }
-.nav-links { display: flex; gap: 18px; }
-.nav a { text-decoration: none; color: #dbeafe; font-weight: 700; }
-.hero-inner { max-width: 1060px; padding: 66px 36px 54px; }
-.eyebrow { margin: 0 0 10px; color: #93c5fd; font-weight: 800; text-transform: uppercase; font-size: 13px; }
-h1 { margin: 0; font-size: clamp(36px, 5vw, 64px); line-height: 1.05; letter-spacing: 0; }
-.lead { max-width: 780px; margin: 18px 0 0; font-size: 18px; color: #e5e7eb; line-height: 1.7; }
-
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 28px;
-}
-
-.stats div {
-  min-width: 150px;
-  padding: 15px 18px;
-  border: 1px solid rgba(255,255,255,.2);
-  background: rgba(255,255,255,.08);
-  border-radius: 8px;
-}
-
-.stats strong { display: block; font-size: 28px; }
-.stats span { color: #cbd5e1; }
-main { padding: 28px 32px 42px; }
-
-.notice {
-  max-width: 1220px;
-  margin: -42px auto 28px;
-  padding: 14px 16px;
-  border-left: 4px solid var(--brand);
-  border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
-  color: #334155;
-  line-height: 1.6;
+  border-bottom: 1px solid var(--line);
 }
 
-.notice strong {
-  display: block;
-  margin-bottom: 2px;
-  color: var(--ink);
+.hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 28px 22px;
 }
+
+h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+main { padding: 20px 24px 42px; }
 
 .summary {
   max-width: 1220px;
@@ -124,7 +83,7 @@ h2 { margin: 0 0 14px; font-size: 20px; }
 }
 
 .chip b { color: inherit; }
-.panel { max-width: 1220px; margin: 0 auto; padding: 20px; }
+.panel { max-width: 1280px; margin: 0 auto; padding: 18px; }
 
 .toolbar {
   display: grid;
@@ -146,7 +105,7 @@ input, select {
 }
 
 .map-panel {
-  margin-top: 18px;
+  margin-top: 16px;
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
@@ -187,8 +146,8 @@ input, select {
 
 .map {
   width: 100%;
-  height: min(62vh, 620px);
-  min-height: 420px;
+  height: min(68vh, 680px);
+  min-height: 460px;
   background: #dbeafe;
 }
 
@@ -558,11 +517,8 @@ footer {
 }
 
 @media (max-width: 620px) {
-  .nav { padding: 0 18px; }
-  .nav-links { gap: 12px; }
-  .hero-inner { padding: 48px 20px 50px; }
-  main { padding: 20px 14px 34px; }
-  .notice { margin-top: -34px; }
+  .hero-inner { padding: 22px 16px 18px; }
+  main { padding: 14px 10px 34px; }
   .toolbar { grid-template-columns: 1fr; }
   .grid { grid-template-columns: 1fr; }
   .map { min-height: 360px; height: 58vh; }
