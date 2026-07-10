@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>全九州 Google Maps 熱門景點與餐廳資料庫</title>
-  <meta name="description" content="已用座標清理的九州與下關熱門景點、餐廳、海鮮、咖啡資料庫。每筆保留 Google Maps 連結、評分、評論數、預估花費與照片。">
+  <title>全九州大型旅行資料庫</title>
+  <meta name="description" content="全九州與下關大型旅行資料庫，含 Google Maps 連結、評分、評論數、座標清理、分類、花費與信心等級。">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -14,31 +14,35 @@
       <a href="#places">探索清單</a>
     </nav>
     <section class="hero-inner">
-      <p class="eyebrow">Google Maps 4.0+ / 500+ reviews / coordinate checked</p>
-      <h1>全九州熱門景點與餐廳資料庫</h1>
-      <p class="lead">為未來每一趟九州旅行準備的可篩選資料庫。這版已移除座標不在九州七縣或山口/下關範圍內的錯誤地點。</p>
+      <p class="eyebrow">expanded / coordinate checked / Google Maps linked</p>
+      <h1>全九州大型旅行資料庫</h1>
+      <p class="lead">擴充到景點、海鮮市場、道之驛、展望台、海岸岬灣、溫泉、神社寺院、咖啡甜點與地方美食。每筆都用座標排除非九州/下關地點，並依評論量標示信心等級。</p>
       <div class="stats">
-        <div><strong>508</strong><span>個地點</span></div>
+        <div><strong>1016</strong><span>個地點</span></div>
         <div><strong>8</strong><span>個區域</span></div>
-        <div><strong>6</strong><span>種分類</span></div>
+        <div><strong>12</strong><span>種分類</span></div>
       </div>
     </section>
   </header>
 
   <main>
     <section class="notice">
-      <strong>資料品質修正版</strong>
-      <span>已用 Google Maps 連結中的經緯度檢查地點位置，排除台灣與其他非九州地點。評分、評論數、價格與照片仍可能隨 Google Maps 更新而變動，出發前請再點入 Google Maps 確認。</span>
+      <strong>大型資料庫修正版</strong>
+      <span>高信心 = 評分 4.0+ 且評論 500+；中信心 = 評分 4.0+ 且評論 100+；候選 = 評分 3.8+ 且評論 50+。所有地點都經 Google Maps 座標範圍檢查，但營業時間、價格、評價仍需出發前點入確認。</span>
     </section>
 
     <section class="summary">
       <div>
         <h2>地區分布</h2>
-        <div class="chips"><button class="chip" type="button" data-filter="region" data-value="福岡縣">福岡縣<b>151</b></button><button class="chip" type="button" data-filter="region" data-value="佐賀縣">佐賀縣<b>57</b></button><button class="chip" type="button" data-filter="region" data-value="長崎縣">長崎縣<b>64</b></button><button class="chip" type="button" data-filter="region" data-value="熊本縣">熊本縣<b>59</b></button><button class="chip" type="button" data-filter="region" data-value="大分縣">大分縣<b>54</b></button><button class="chip" type="button" data-filter="region" data-value="宮崎縣">宮崎縣<b>42</b></button><button class="chip" type="button" data-filter="region" data-value="鹿兒島縣">鹿兒島縣<b>56</b></button><button class="chip" type="button" data-filter="region" data-value="山口/下關">山口/下關<b>25</b></button></div>
+        <div class="chips"><button class="chip" type="button" data-filter="region" data-value="福岡縣">福岡縣<b>277</b></button><button class="chip" type="button" data-filter="region" data-value="佐賀縣">佐賀縣<b>132</b></button><button class="chip" type="button" data-filter="region" data-value="長崎縣">長崎縣<b>152</b></button><button class="chip" type="button" data-filter="region" data-value="熊本縣">熊本縣<b>151</b></button><button class="chip" type="button" data-filter="region" data-value="大分縣">大分縣<b>141</b></button><button class="chip" type="button" data-filter="region" data-value="宮崎縣">宮崎縣<b>82</b></button><button class="chip" type="button" data-filter="region" data-value="鹿兒島縣">鹿兒島縣<b>56</b></button><button class="chip" type="button" data-filter="region" data-value="山口/下關">山口/下關<b>25</b></button></div>
       </div>
       <div>
         <h2>類型分布</h2>
-        <div class="chips"><button class="chip" type="button" data-filter="kind" data-value="景點">景點<b>244</b></button><button class="chip" type="button" data-filter="kind" data-value="餐廳/美食">餐廳/美食<b>105</b></button><button class="chip" type="button" data-filter="kind" data-value="海鮮/壽司">海鮮/壽司<b>62</b></button><button class="chip" type="button" data-filter="kind" data-value="拉麵/麵食">拉麵/麵食<b>42</b></button><button class="chip" type="button" data-filter="kind" data-value="居酒屋/酒場">居酒屋/酒場<b>19</b></button><button class="chip" type="button" data-filter="kind" data-value="咖啡/甜點">咖啡/甜點<b>36</b></button></div>
+        <div class="chips"><button class="chip" type="button" data-filter="kind" data-value="神社/寺院">神社/寺院<b>66</b></button><button class="chip" type="button" data-filter="kind" data-value="餐廳/美食">餐廳/美食<b>110</b></button><button class="chip" type="button" data-filter="kind" data-value="自然/海景">自然/海景<b>146</b></button><button class="chip" type="button" data-filter="kind" data-value="海鮮/壽司">海鮮/壽司<b>94</b></button><button class="chip" type="button" data-filter="kind" data-value="博物館/水族館">博物館/水族館<b>27</b></button><button class="chip" type="button" data-filter="kind" data-value="居酒屋/酒場">居酒屋/酒場<b>26</b></button><button class="chip" type="button" data-filter="kind" data-value="景點">景點<b>209</b></button><button class="chip" type="button" data-filter="kind" data-value="展望台/夜景">展望台/夜景<b>56</b></button><button class="chip" type="button" data-filter="kind" data-value="拉麵/麵食">拉麵/麵食<b>42</b></button><button class="chip" type="button" data-filter="kind" data-value="溫泉">溫泉<b>179</b></button><button class="chip" type="button" data-filter="kind" data-value="購物/道之驛">購物/道之驛<b>13</b></button><button class="chip" type="button" data-filter="kind" data-value="咖啡/甜點">咖啡/甜點<b>48</b></button></div>
+      </div>
+      <div>
+        <h2>信心等級</h2>
+        <div class="chips"><button class="chip" type="button" data-filter="confidence" data-value="高">高<b>688</b></button><button class="chip" type="button" data-filter="confidence" data-value="中">中<b>198</b></button><button class="chip" type="button" data-filter="confidence" data-value="候選">候選<b>130</b></button></div>
       </div>
     </section>
 
@@ -46,20 +50,12 @@
       <div class="toolbar">
         <label class="search">
           <span>搜尋</span>
-          <input id="searchInput" type="search" placeholder="輸入地名、餐廳、海鮮、溫泉、咖啡...">
+          <input id="searchInput" type="search" placeholder="輸入地名、餐廳、海鮮、市場、溫泉、岬、展望台...">
         </label>
-        <label>
-          <span>地區</span>
-          <select id="regionFilter"><option value="">全部地區</option></select>
-        </label>
-        <label>
-          <span>類型</span>
-          <select id="kindFilter"><option value="">全部類型</option></select>
-        </label>
-        <label>
-          <span>推薦</span>
-          <select id="recFilter"><option value="">全部推薦</option></select>
-        </label>
+        <label><span>地區</span><select id="regionFilter"><option value="">全部地區</option></select></label>
+        <label><span>類型</span><select id="kindFilter"><option value="">全部類型</option></select></label>
+        <label><span>推薦</span><select id="recFilter"><option value="">全部推薦</option></select></label>
+        <label><span>信心</span><select id="confidenceFilter"><option value="">全部信心</option></select></label>
         <label>
           <span>排序</span>
           <select id="sortSelect">
@@ -77,7 +73,7 @@
   </main>
 
   <footer>
-    <p>資料來源：Google Maps 搜尋結果與地點連結座標。這是一份旅行準備資料庫，不是官方排名；營業時間、價格與評價請以 Google Maps 現況為準。</p>
+    <p>資料來源：Google Maps 搜尋結果與地點連結座標。這是旅行準備資料庫，不是官方排名；請以 Google Maps 現況為準。</p>
   </footer>
   <script src="assets/app.js"></script>
 </body>
