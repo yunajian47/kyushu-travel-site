@@ -9,7 +9,6 @@ const state = {
 };
 
 const regionOrder = ["福岡縣", "佐賀縣", "長崎縣", "熊本縣", "大分縣", "宮崎縣", "鹿兒島縣", "山口/下關"];
-const confidenceOrder = ["高", "中", "候選"];
 const $ = (id) => document.getElementById(id);
 
 function unique(values) {
@@ -47,22 +46,17 @@ function recClass(rec) {
   return "rec-b";
 }
 
-function confidenceText(value) {
-  return value || "未分級";
-}
-
 function buildIntro(place) {
   const kind = place.kind || "地點";
   const region = place.region || "九州";
   const name = place.name || "這個地點";
-  const confidence = confidenceText(place.confidence);
   const category = place.category || place.query || kind;
 
   if (kind.includes("海鮮")) {
-    return `${name} 是 ${region} 的${category}候選，適合想找海鮮、市場或壽司時先收藏。這筆資料為${confidence}信心，建議點進 Google Maps 確認營業時間、菜單與最新評論。`;
+    return `${name} 是 ${region} 的${category}候選，適合想找海鮮、市場或壽司時先收藏。建議點進 Google Maps 確認營業時間、菜單與最新評論。`;
   }
   if (kind.includes("自然") || kind.includes("展望")) {
-    return `${name} 適合安排成看海、岬灣、展望或自然景觀的停靠點。這筆資料為${confidence}信心，可搭配地圖位置判斷是否順路。`;
+    return `${name} 適合安排成看海、岬灣、展望或自然景觀的停靠點。可搭配地圖位置判斷是否順路。`;
   }
   if (kind.includes("溫泉")) {
     return `${name} 是 ${region} 的溫泉相關候選，適合排入放鬆、日歸湯或住宿備案。出發前請確認入浴時間、休館日與是否需預約。`;
@@ -93,23 +87,17 @@ function renderSummary() {
 
   const regionCounts = countBy(state.places, "region");
   const kindCounts = countBy(state.places, "kind");
-  const confidenceCounts = countBy(state.places, "confidence");
 
   const regionBox = $("regionChips");
   const kindBox = $("kindChips");
-  const confidenceBox = $("confidenceChips");
   regionBox.innerHTML = "";
   kindBox.innerHTML = "";
-  confidenceBox.innerHTML = "";
 
   for (const region of regionOrder) {
     if (regionCounts.has(region)) regionBox.appendChild(chipButton(region, regionCounts.get(region), "region"));
   }
   for (const [kind, count] of [...kindCounts.entries()].sort((a, b) => b[1] - a[1])) {
     kindBox.appendChild(chipButton(kind, count, "kind"));
-  }
-  for (const level of confidenceOrder) {
-    if (confidenceCounts.has(level)) confidenceBox.appendChild(chipButton(level, confidenceCounts.get(level), "confidence"));
   }
 }
 
@@ -118,7 +106,6 @@ function updateChipState() {
     const targets = {
       region: $("regionFilter"),
       kind: $("kindFilter"),
-      confidence: $("confidenceFilter"),
     };
     const target = targets[chip.dataset.filter];
     chip.classList.toggle("active", target && target.value === chip.dataset.value);
@@ -135,7 +122,6 @@ function card(place) {
       <div class="badge-row">
         <span class="badge ${recClass(place.recommendation)}">${escapeHtml(place.recommendation)}</span>
         <span class="badge">${escapeHtml(place.region)}</span>
-        <span class="badge">${escapeHtml(confidenceText(place.confidence))}</span>
       </div>
     </div>
     <div class="card-body">
@@ -179,9 +165,11 @@ function markerPopup(place) {
 }
 
 function markerIcon(place) {
-  const confidenceClass = place.confidence === "高" ? "marker-high" : place.confidence === "中" ? "marker-mid" : "marker-candidate";
+  const reviews = Number(place.reviews || 0);
+  const rating = Number(place.rating || 0);
+  const markerClass = rating >= 4.4 && reviews >= 3000 ? "marker-high" : reviews >= 500 ? "marker-mid" : "marker-candidate";
   return L.divIcon({
-    className: `custom-marker ${confidenceClass}`,
+    className: `custom-marker ${markerClass}`,
     html: `<span>${escapeHtml((place.kind || "").slice(0, 1))}</span>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
@@ -227,17 +215,17 @@ function applyFilters(resetVisible = true) {
   const q = $("searchInput").value.trim().toLowerCase();
   const region = $("regionFilter").value;
   const kind = $("kindFilter").value;
-  const rec = $("recFilter").value;
-  const confidence = $("confidenceFilter").value;
+  const minRating = Number($("ratingFilter").value || 0);
+  const minReviews = Number($("reviewFilter").value || 0);
   const sort = $("sortSelect").value;
 
   state.filtered = state.places.filter((p) => {
-    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query} ${p.reason} ${p.confidence}`.toLowerCase();
+    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query} ${p.reason}`.toLowerCase();
     return (!q || haystack.includes(q)) &&
       (!region || p.region === region) &&
       (!kind || p.kind === kind) &&
-      (!rec || p.recommendation === rec) &&
-      (!confidence || p.confidence === confidence);
+      Number(p.rating || 0) >= minRating &&
+      Number(p.reviews || 0) >= minReviews;
   });
 
   state.filtered.sort((a, b) => {
@@ -282,7 +270,7 @@ function showPreview(placeIndex) {
     <span class="badge ${recClass(place.recommendation)}">${escapeHtml(place.recommendation)}</span>
     <span class="badge">${escapeHtml(place.region)}</span>
     <span class="badge">${escapeHtml(place.kind)}</span>
-    <span class="badge">${escapeHtml(confidenceText(place.confidence))}</span>`;
+    <span class="badge">評論 ${Number(place.reviews).toLocaleString()}</span>`;
 
   $("previewModal").hidden = false;
   document.body.classList.add("modal-open");
@@ -295,7 +283,7 @@ function closePreview() {
 }
 
 function wireEvents() {
-  for (const id of ["searchInput", "regionFilter", "kindFilter", "recFilter", "confidenceFilter", "sortSelect"]) {
+  for (const id of ["searchInput", "regionFilter", "kindFilter", "ratingFilter", "reviewFilter", "sortSelect"]) {
     $(id).addEventListener("input", () => applyFilters(true));
   }
 
@@ -317,7 +305,6 @@ function wireEvents() {
       const targets = {
         region: $("regionFilter"),
         kind: $("kindFilter"),
-        confidence: $("confidenceFilter"),
       };
       const target = targets[chip.dataset.filter];
       if (!target) return;
@@ -356,8 +343,8 @@ async function init() {
   renderSummary();
   fillSelect($("regionFilter"), regionOrder.filter((region) => state.places.some((p) => p.region === region)));
   fillSelect($("kindFilter"), unique(state.places.map((p) => p.kind)).sort());
-  fillSelect($("recFilter"), unique(state.places.map((p) => p.recommendation)).sort());
-  fillSelect($("confidenceFilter"), confidenceOrder.filter((level) => state.places.some((p) => p.confidence === level)));
+  fillSelect($("ratingFilter"), ["3.8", "4.0", "4.2", "4.4", "4.6", "4.8"]);
+  fillSelect($("reviewFilter"), ["50", "100", "300", "500", "1000", "3000", "10000"]);
 
   setupMap();
   wireEvents();
