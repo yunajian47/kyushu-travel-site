@@ -108,7 +108,7 @@ h2 { margin: 0 0 14px; font-size: 20px; }
 .panel { max-width: 1220px; margin: 0 auto; padding: 20px; }
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(260px, 1.5fr) repeat(4, minmax(150px, 1fr));
+  grid-template-columns: minmax(260px, 1.5fr) repeat(5, minmax(130px, 1fr));
   gap: 12px;
 }
 label span { display: block; margin-bottom: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
