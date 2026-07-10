@@ -46,30 +46,6 @@ function recClass(rec) {
   return "rec-b";
 }
 
-function buildIntro(place) {
-  const kind = place.kind || "地點";
-  const region = place.region || "九州";
-  const name = place.name || "這個地點";
-  const category = place.category || place.query || kind;
-
-  if (kind.includes("海鮮")) {
-    return `${name} 是 ${region} 的${category}候選，適合想找海鮮、市場或壽司時先收藏。建議點進 Google Maps 確認營業時間、菜單與最新評論。`;
-  }
-  if (kind.includes("自然") || kind.includes("展望")) {
-    return `${name} 適合安排成看海、岬灣、展望或自然景觀的停靠點。可搭配地圖位置判斷是否順路。`;
-  }
-  if (kind.includes("溫泉")) {
-    return `${name} 是 ${region} 的溫泉相關候選，適合排入放鬆、日歸湯或住宿備案。出發前請確認入浴時間、休館日與是否需預約。`;
-  }
-  if (kind.includes("神社") || kind.includes("寺")) {
-    return `${name} 是 ${region} 的文化與參拜候選，適合放在城市散步或郊區路線中。可先看地圖位置，再決定要不要和附近景點串在一起。`;
-  }
-  if (kind.includes("咖啡") || kind.includes("甜點")) {
-    return `${name} 適合作為移動途中休息、下午茶或雨天備案。這類店家營業日變動較常見，建議出發前再查一次。`;
-  }
-  return `${name} 是 ${region} 的${kind}候選，依 Google Maps 評分、評論數與座標清理後收錄。可先用預覽判斷興趣，再點 Google Maps 看最新狀態。`;
-}
-
 function chipButton(label, count, filter) {
   const button = document.createElement("button");
   button.className = "chip";
@@ -128,7 +104,6 @@ function card(place) {
       <h3>${escapeHtml(place.name)}</h3>
       <p class="meta">${escapeHtml(place.kind)} · ${escapeHtml(place.category || place.query || "")}</p>
       <p class="meta">評分 ${Number(place.rating).toFixed(1)} · 評論 ${Number(place.reviews).toLocaleString()} · ${escapeHtml(place.cost || "請點 Google Maps 確認")}</p>
-      <p class="reason">${escapeHtml(buildIntro(place))}</p>
       <div class="actions">
         <button type="button" data-preview="${place.index}">預覽</button>
         <button type="button" class="secondary-button" data-map-focus="${place.index}">地圖</button>
@@ -143,7 +118,10 @@ function setupMap() {
     $("map").innerHTML = "<p class='map-error'>地圖套件載入失敗，請稍後重新整理。</p>";
     return;
   }
-  state.map = L.map("map", { scrollWheelZoom: false }).setView([32.7, 130.7], 7);
+  const mapEl = $("map");
+  state.map = L.map(mapEl, { scrollWheelZoom: false }).setView([32.7, 130.7], 7);
+  mapEl.addEventListener("mouseenter", () => state.map.scrollWheelZoom.enable());
+  mapEl.addEventListener("mouseleave", () => state.map.scrollWheelZoom.disable());
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
     attribution: "&copy; OpenStreetMap contributors",
@@ -220,7 +198,7 @@ function applyFilters(resetVisible = true) {
   const sort = $("sortSelect").value;
 
   state.filtered = state.places.filter((p) => {
-    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query} ${p.reason}`.toLowerCase();
+    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query}`.toLowerCase();
     return (!q || haystack.includes(q)) &&
       (!region || p.region === region) &&
       (!kind || p.kind === kind) &&
@@ -259,12 +237,10 @@ function showPreview(placeIndex) {
   $("previewPhoto").src = place.photo;
   $("previewPhoto").alt = place.name;
   $("previewTitle").textContent = place.name;
-  $("previewIntro").textContent = buildIntro(place);
   $("previewRating").textContent = Number(place.rating).toFixed(1);
   $("previewReviews").textContent = Number(place.reviews).toLocaleString();
   $("previewCost").textContent = place.cost || "請點 Google Maps 確認";
   $("previewCoords").textContent = `${Number(place.lat).toFixed(5)}, ${Number(place.lng).toFixed(5)}`;
-  $("previewReason").textContent = place.reason || "";
   $("previewMaps").href = place.link;
   $("previewBadges").innerHTML = `
     <span class="badge ${recClass(place.recommendation)}">${escapeHtml(place.recommendation)}</span>
