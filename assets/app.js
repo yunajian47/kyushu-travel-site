@@ -5,7 +5,6 @@ const state = {
 };
 
 const regionOrder = ["福岡縣", "佐賀縣", "長崎縣", "熊本縣", "大分縣", "宮崎縣", "鹿兒島縣", "山口/下關"];
-
 const $ = (id) => document.getElementById(id);
 
 function unique(values) {
@@ -23,7 +22,12 @@ function fillSelect(select, values) {
 
 function updateChipState() {
   document.querySelectorAll(".chip").forEach((chip) => {
-    const target = chip.dataset.filter === "region" ? $("regionFilter") : $("kindFilter");
+    const targets = {
+      region: $("regionFilter"),
+      kind: $("kindFilter"),
+      confidence: $("confidenceFilter"),
+    };
+    const target = targets[chip.dataset.filter];
     chip.classList.toggle("active", target && target.value === chip.dataset.value);
   });
 }
@@ -32,10 +36,6 @@ function recClass(rec) {
   if (rec.startsWith("S")) return "rec-s";
   if (rec.startsWith("A")) return "rec-a";
   return "rec-b";
-}
-
-function yenText(cost) {
-  return cost || "請點 Google Maps 確認";
 }
 
 function escapeHtml(value) {
@@ -55,12 +55,13 @@ function card(place) {
       <div class="badge-row">
         <span class="badge ${recClass(place.recommendation)}">${escapeHtml(place.recommendation)}</span>
         <span class="badge">${escapeHtml(place.region)}</span>
+        <span class="badge">${escapeHtml(place.confidence || "未分級")}</span>
       </div>
     </div>
     <div class="card-body">
       <h3>${escapeHtml(place.name)}</h3>
       <p class="meta">${escapeHtml(place.kind)} · ${escapeHtml(place.category || place.query || "")}</p>
-      <p class="meta">評分 ${Number(place.rating).toFixed(1)} · 評論 ${Number(place.reviews).toLocaleString()} · ${escapeHtml(yenText(place.cost))}</p>
+      <p class="meta">評分 ${Number(place.rating).toFixed(1)} · 評論 ${Number(place.reviews).toLocaleString()} · ${escapeHtml(place.cost || "請點 Google Maps 確認")}</p>
       <p class="reason">${escapeHtml(place.reason)}</p>
       <div class="actions">
         <a href="${escapeAttr(place.link)}" target="_blank" rel="noopener">Google Maps</a>
@@ -75,14 +76,16 @@ function applyFilters(resetVisible = true) {
   const region = $("regionFilter").value;
   const kind = $("kindFilter").value;
   const rec = $("recFilter").value;
+  const confidence = $("confidenceFilter").value;
   const sort = $("sortSelect").value;
 
   state.filtered = state.places.filter((p) => {
-    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query} ${p.reason}`.toLowerCase();
+    const haystack = `${p.name} ${p.region} ${p.kind} ${p.category} ${p.query} ${p.reason} ${p.confidence}`.toLowerCase();
     return (!q || haystack.includes(q)) &&
       (!region || p.region === region) &&
       (!kind || p.kind === kind) &&
-      (!rec || p.recommendation === rec);
+      (!rec || p.recommendation === rec) &&
+      (!confidence || p.confidence === confidence);
   });
 
   state.filtered.sort((a, b) => {
@@ -113,13 +116,19 @@ async function init() {
   fillSelect($("regionFilter"), regionOrder.filter((region) => state.places.some((p) => p.region === region)));
   fillSelect($("kindFilter"), unique(state.places.map((p) => p.kind)).sort());
   fillSelect($("recFilter"), unique(state.places.map((p) => p.recommendation)).sort());
+  fillSelect($("confidenceFilter"), ["高", "中", "候選"].filter((level) => state.places.some((p) => p.confidence === level)));
 
-  for (const id of ["searchInput", "regionFilter", "kindFilter", "recFilter", "sortSelect"]) {
+  for (const id of ["searchInput", "regionFilter", "kindFilter", "recFilter", "confidenceFilter", "sortSelect"]) {
     $(id).addEventListener("input", () => applyFilters(true));
   }
   document.querySelectorAll(".chip").forEach((chip) => {
     chip.addEventListener("click", () => {
-      const target = chip.dataset.filter === "region" ? $("regionFilter") : $("kindFilter");
+      const targets = {
+        region: $("regionFilter"),
+        kind: $("kindFilter"),
+        confidence: $("confidenceFilter"),
+      };
+      const target = targets[chip.dataset.filter];
       if (!target) return;
       target.value = target.value === chip.dataset.value ? "" : chip.dataset.value;
       applyFilters(true);
