@@ -150,9 +150,9 @@ function markerPopup(place) {
 function markerColor(place) {
   const reviews = Number(place.reviews || 0);
   const rating = Number(place.rating || 0);
-  if (rating >= 4.4 && reviews >= 3000) return "#1456d9";
-  if (reviews >= 500) return "#0f766e";
-  return "#a16207";
+  if (rating >= 4.4 && reviews >= 3000) return "#1f4f6f";
+  if (reviews >= 500) return "#4f6f52";
+  return "#b6422c";
 }
 
 function markerTooltip(place) {
@@ -352,7 +352,7 @@ function wireEvents() {
 }
 
 async function init() {
-  const res = await fetch("assets/places.json?v=clean-ui-20260710");
+  const res = await fetch("assets/places.json?v=japan-ui-20260710");
   state.places = await res.json();
 
   renderSummary();
