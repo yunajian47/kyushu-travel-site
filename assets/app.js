@@ -7,11 +7,21 @@ const state = {
   markerRenderer: null,
   markers: new Map(),
   activePreview: null,
+  mapRenderToken: 0,
 };
 
-window.kyushuMapState = state;
+window.kyushuTokyoNagoyaMapState = state;
 
-const regionOrder = ["福岡縣", "佐賀縣", "長崎縣", "熊本縣", "大分縣", "宮崎縣", "鹿兒島縣", "山口/下關"];
+const prefectureOrder = [
+  "北海道", "青森縣", "岩手縣", "宮城縣", "秋田縣", "山形縣", "福島縣",
+  "茨城縣", "栃木縣", "群馬縣", "埼玉縣", "千葉縣", "東京都", "神奈川縣",
+  "新潟縣", "富山縣", "石川縣", "福井縣", "山梨縣", "長野縣", "岐阜縣",
+  "靜岡縣", "愛知縣", "三重縣", "滋賀縣", "京都府", "大阪府", "兵庫縣",
+  "奈良縣", "和歌山縣", "鳥取縣", "島根縣", "岡山縣", "廣島縣", "山口縣",
+  "德島縣", "香川縣", "愛媛縣", "高知縣", "福岡縣", "佐賀縣", "長崎縣",
+  "熊本縣", "大分縣", "宮崎縣", "鹿兒島縣", "沖繩縣",
+];
+const prefectureRank = new Map(prefectureOrder.map((region, index) => [region, index]));
 const $ = (id) => document.getElementById(id);
 
 function unique(values) {
@@ -34,6 +44,24 @@ function escapeAttr(value) {
   return escapeHtml(value);
 }
 
+function fallbackPhoto(place) {
+  const query = encodeURIComponent(`${place.name || ""} ${place.region || ""} 日本`);
+  return `https://tse4.mm.bing.net/th?q=${query}&w=640&h=420&c=7&rs=1&p=0`;
+}
+
+function isUsablePhotoUrl(value) {
+  return /^https?:\/\//i.test(String(value || "").trim());
+}
+
+function photoUrl(place) {
+  return isUsablePhotoUrl(place.photo) ? place.photo : fallbackPhoto(place);
+}
+
+function imageAttrs(place, alt = "") {
+  const fallback = fallbackPhoto(place);
+  return `src="${escapeAttr(photoUrl(place))}" data-fallback-src="${escapeAttr(fallback)}" alt="${escapeAttr(alt)}" loading="lazy" referrerpolicy="no-referrer"`;
+}
+
 function fillSelect(select, values) {
   for (const value of values) {
     const option = document.createElement("option");
@@ -41,6 +69,18 @@ function fillSelect(select, values) {
     option.textContent = value;
     select.appendChild(option);
   }
+}
+
+function regionSortIndex(region) {
+  return prefectureRank.has(region) ? prefectureRank.get(region) : prefectureOrder.length + 1;
+}
+
+function sortedRegions(rows) {
+  return unique(rows.map((p) => p.region)).sort((a, b) => {
+    const rankDiff = regionSortIndex(a) - regionSortIndex(b);
+    if (rankDiff) return rankDiff;
+    return a.localeCompare(b, "zh-Hant");
+  });
 }
 
 function recClass(rec) {
@@ -73,7 +113,7 @@ function renderSummary() {
   regionBox.innerHTML = "";
   kindBox.innerHTML = "";
 
-  for (const region of regionOrder) {
+  for (const region of sortedRegions(state.places)) {
     if (regionCounts.has(region)) regionBox.appendChild(chipButton(region, regionCounts.get(region), "region"));
   }
   for (const [kind, count] of [...kindCounts.entries()].sort((a, b) => b[1] - a[1])) {
@@ -98,7 +138,7 @@ function card(place) {
   article.dataset.placeIndex = place.index;
   article.innerHTML = `
     <div class="photo-wrap">
-      <img src="${escapeAttr(place.photo)}" alt="${escapeAttr(place.name)}" loading="lazy" referrerpolicy="no-referrer">
+      <img ${imageAttrs(place, place.name)}>
       <div class="badge-row">
         <span class="badge ${recClass(place.recommendation)}">${escapeHtml(place.recommendation)}</span>
         <span class="badge">${escapeHtml(place.region)}</span>
@@ -123,7 +163,7 @@ function setupMap() {
     return;
   }
   const mapEl = $("map");
-  state.map = L.map(mapEl, { preferCanvas: true, scrollWheelZoom: false }).setView([32.7, 130.7], 7);
+  state.map = L.map(mapEl, { preferCanvas: true, scrollWheelZoom: false }).setView([34.8, 136.2], 5);
   mapEl.addEventListener("mouseenter", () => state.map.scrollWheelZoom.enable());
   mapEl.addEventListener("mouseleave", () => state.map.scrollWheelZoom.disable());
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -158,7 +198,7 @@ function markerColor(place) {
 function markerTooltip(place) {
   return `
     <article class="hover-card">
-      <img src="${escapeAttr(place.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">
+      <img ${imageAttrs(place, "")}>
       <div>
         <strong>${escapeHtml(place.name)}</strong>
         <span>${escapeHtml(place.region)} · ${escapeHtml(place.kind)}</span>
@@ -168,60 +208,86 @@ function markerTooltip(place) {
     </article>`;
 }
 
+function validMapPoints(rows = state.filtered) {
+  return rows.filter((place) => Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng)));
+}
+
+function createMarker(place) {
+  const color = markerColor(place);
+  return L.circleMarker([Number(place.lat), Number(place.lng)], {
+    renderer: state.markerRenderer,
+    radius: Number(place.reviews || 0) >= 3000 ? 7 : 6,
+    color: "#ffffff",
+    weight: 2,
+    fillColor: color,
+    fillOpacity: 0.9,
+    bubblingMouseEvents: false,
+  })
+    .bindTooltip(markerTooltip(place), {
+      className: "map-hover-card",
+      direction: "top",
+      offset: [0, -10],
+      opacity: 1,
+      sticky: true,
+    })
+    .bindPopup(markerPopup(place))
+    .on("mouseover", function () {
+      this.setStyle({ radius: 9, weight: 3, fillOpacity: 1 });
+      this.openTooltip();
+    })
+    .on("mouseout", function () {
+      this.setStyle({ radius: Number(place.reviews || 0) >= 3000 ? 7 : 6, weight: 2, fillOpacity: 0.9 });
+      this.closeTooltip();
+    });
+}
+
+function addMarker(place) {
+  const index = Number(place.index);
+  if (state.markers.has(index)) return state.markers.get(index);
+  const marker = createMarker(place);
+  marker.addTo(state.markerLayer);
+  state.markers.set(index, marker);
+  return marker;
+}
+
 function renderMap() {
   if (!state.map || !state.markerLayer) return;
+  const token = ++state.mapRenderToken;
   state.markerLayer.clearLayers();
   state.markers.clear();
 
-  const points = state.filtered.filter((place) => Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng)));
+  const points = validMapPoints();
   $("mapCount").textContent = points.length.toLocaleString();
 
-  for (const place of points) {
-    const color = markerColor(place);
-    const marker = L.circleMarker([Number(place.lat), Number(place.lng)], {
-      renderer: state.markerRenderer,
-      radius: Number(place.reviews || 0) >= 3000 ? 7 : 6,
-      color: "#ffffff",
-      weight: 2,
-      fillColor: color,
-      fillOpacity: 0.9,
-      bubblingMouseEvents: false,
-    })
-      .bindTooltip(markerTooltip(place), {
-        className: "map-hover-card",
-        direction: "top",
-        offset: [0, -10],
-        opacity: 1,
-        sticky: true,
-      })
-      .bindPopup(markerPopup(place))
-      .on("mouseover", function () {
-        this.setStyle({ radius: 9, weight: 3, fillOpacity: 1 });
-        this.openTooltip();
-      })
-      .on("mouseout", function () {
-        this.setStyle({ radius: Number(place.reviews || 0) >= 3000 ? 7 : 6, weight: 2, fillOpacity: 0.9 });
-        this.closeTooltip();
-      });
-    marker.addTo(state.markerLayer);
-    state.markers.set(Number(place.index), marker);
+  let cursor = 0;
+  const chunkSize = points.length > 8000 ? 300 : points.length > 3000 ? 450 : 900;
+  function drawChunk() {
+    if (token !== state.mapRenderToken) return;
+    const end = Math.min(cursor + chunkSize, points.length);
+    for (; cursor < end; cursor += 1) {
+      addMarker(points[cursor]);
+    }
+    if (cursor < points.length) {
+      requestAnimationFrame(drawChunk);
+    }
   }
 
+  requestAnimationFrame(drawChunk);
   if (points.length) fitMapToFiltered(false);
 }
 
 function fitMapToFiltered(animated = true) {
-  if (!state.map || !state.markerLayer) return;
-  const markers = [...state.markers.values()];
-  if (!markers.length) return;
-  const group = L.featureGroup(markers);
-  state.map.fitBounds(group.getBounds().pad(0.12), { animate: animated, maxZoom: 11 });
+  if (!state.map) return;
+  const points = validMapPoints();
+  if (!points.length) return;
+  const bounds = L.latLngBounds(points.map((place) => [Number(place.lat), Number(place.lng)]));
+  state.map.fitBounds(bounds.pad(0.12), { animate: animated, maxZoom: 11 });
 }
 
 function focusMap(placeIndex) {
-  const marker = state.markers.get(Number(placeIndex));
   const place = state.places.find((item) => Number(item.index) === Number(placeIndex));
-  if (!marker || !place || !state.map) return;
+  if (!place || !state.map || !state.markerLayer) return;
+  const marker = state.markers.get(Number(placeIndex)) || addMarker(place);
   document.querySelector("#mapSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
   state.map.setView([Number(place.lat), Number(place.lng)], 13);
   marker.openTooltip();
@@ -248,7 +314,7 @@ function applyFilters(resetVisible = true) {
   state.filtered.sort((a, b) => {
     if (sort === "reviews") return b.reviews - a.reviews;
     if (sort === "rating") return b.rating - a.rating || b.reviews - a.reviews;
-    if (sort === "region") return regionOrder.indexOf(a.region) - regionOrder.indexOf(b.region) || b.score - a.score;
+    if (sort === "region") return regionSortIndex(a.region) - regionSortIndex(b.region) || b.score - a.score;
     return b.score - a.score;
   });
 
@@ -273,7 +339,8 @@ function showPreview(placeIndex) {
   if (!place) return;
   state.activePreview = place;
 
-  $("previewPhoto").src = place.photo;
+  $("previewPhoto").src = photoUrl(place);
+  $("previewPhoto").dataset.fallbackSrc = fallbackPhoto(place);
   $("previewPhoto").alt = place.name;
   $("previewTitle").textContent = place.name;
   $("previewRating").textContent = Number(place.rating).toFixed(1);
@@ -334,6 +401,13 @@ function wireEvents() {
     }
   });
 
+  document.addEventListener("error", (event) => {
+    const img = event.target && event.target.closest ? event.target.closest("img[data-fallback-src]") : null;
+    if (img && img.src !== img.dataset.fallbackSrc) {
+      img.src = img.dataset.fallbackSrc;
+    }
+  }, true);
+
   $("loadMore").addEventListener("click", () => {
     state.visible += 36;
     renderCards();
@@ -351,12 +425,71 @@ function wireEvents() {
   });
 }
 
+function datasetMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("dataset") === "stress" ? "stress" : "production";
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${url} ${response.status}`);
+  return response.json();
+}
+
+async function loadProductionPlaces() {
+  const cacheKey = "kyushu-tokyo-nagoya-20260710";
+  const manifestUrl = `assets/places-manifest.json?v=${cacheKey}`;
+  let rows = [];
+  try {
+    const manifestResponse = await fetch(manifestUrl);
+    if (!manifestResponse.ok) throw new Error(`manifest ${manifestResponse.status}`);
+    const manifest = await manifestResponse.json();
+    if (Array.isArray(manifest.shards) && manifest.shards.length) {
+      const batches = await Promise.all(
+        manifest.shards.map((shard) => fetchJson(new URL(`${shard.url}?v=${cacheKey}`, manifestResponse.url).toString()))
+      );
+      rows = batches.flat();
+    }
+  } catch (error) {
+    console.warn("places manifest fallback", error);
+  }
+  if (!rows.length) rows = await fetchJson(`assets/places.json?v=${cacheKey}`);
+  return mergePlaces(rows, await loadSupplementalPlaces(cacheKey));
+}
+
+async function loadSupplementalPlaces(cacheKey) {
+  try {
+    return await fetchJson(`assets/extras-tokyo-nagoya.json?v=${cacheKey}`);
+  } catch (error) {
+    console.info("supplemental places skipped", error);
+    return [];
+  }
+}
+
+function mergePlaces(primaryRows, supplementalRows) {
+  const merged = [];
+  const seen = new Set();
+  for (const row of [...primaryRows, ...supplementalRows]) {
+    const key = `${row.region || ""}::${row.name || ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push({ ...row, index: merged.length + 1 });
+  }
+  return merged;
+}
+
+function loadPlaces() {
+  if (datasetMode() === "stress") {
+    return fetchJson("data/stress/places-15000.synthetic.json?v=stress-15000-20260710");
+  }
+  return loadProductionPlaces();
+}
+
 async function init() {
-  const res = await fetch("assets/places.json?v=japan-ui-20260710");
-  state.places = await res.json();
+  state.places = await loadPlaces();
 
   renderSummary();
-  fillSelect($("regionFilter"), regionOrder.filter((region) => state.places.some((p) => p.region === region)));
+  fillSelect($("regionFilter"), sortedRegions(state.places));
   fillSelect($("kindFilter"), unique(state.places.map((p) => p.kind)).sort());
   fillSelect($("ratingFilter"), ["3.8", "4.0", "4.2", "4.4", "4.6", "4.8"]);
   fillSelect($("reviewFilter"), ["50", "100", "300", "500", "1000", "3000", "10000"]);
