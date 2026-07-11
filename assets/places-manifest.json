@@ -1,34 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-10T11:33:09.744903+00:00",
-  "dataset": "all-japan-travel-database",
-  "sourcePolicy": "production data must come from real Google Maps or Google Places inputs",
+  "dataset": "kyushu-tokyo-nagoya-travel-database",
+  "sourcePolicy": "九州資料沿用既有 Google Maps 資料；東京與名古屋由 supplemental JSON 合併載入，評分評論需出發前再確認。",
   "singleFile": "places.json",
-  "totalPlaces": 1261,
-  "minimumTarget": 15000,
-  "status": "needs_more_true_google_maps_data",
-  "completionChecks": {
-    "minimum_15000_places": false,
-    "all_47_prefectures_covered": false,
-    "all_prefecture_quotas_met": false,
-    "no_missing_coordinates": true,
-    "all_coordinates_inside_prefecture_bounds": true,
-    "unique_google_maps_links": true,
-    "no_synthetic_production_sources": true
-  },
-  "shardSize": 1000,
-  "shards": [
-    {
-      "url": "data/places-shards/places-0001.json",
-      "count": 1000,
-      "startIndex": 1,
-      "endIndex": 1000
-    },
-    {
-      "url": "data/places-shards/places-0002.json",
-      "count": 261,
-      "startIndex": 1001,
-      "endIndex": 1261
-    }
-  ]
+  "supplementalFile": "extras-tokyo-nagoya.json",
+  "scope": ["九州", "山口/下關", "東京都", "愛知縣/名古屋"],
+  "cacheKey": "kyushu-tokyo-nagoya-20260710",
+  "shards": []
 }
